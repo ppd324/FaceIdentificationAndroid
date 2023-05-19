@@ -22,11 +22,11 @@ FaceIdentification具有以下特性：
 
 ## 演示
 
-<img title="" src="file:///C:/Users/Lenovo/Desktop/Screenshot_20230519-152155_FaceIdentification.jpg" alt="" width="472">
+<img title="" src="https://github.com/ppd324/FaceIdentificationAndroid/blob/master/images/Screenshot_20230519-152155_FaceIdentification.jpg" alt="" width="472">
 
 可上传人脸至云端人脸库，安卓端采集人脸特征后，发送人脸特征数据至云端，云端返回识别结果。
 
-<img title="" src="file:///C:/Users/Lenovo/Desktop/Screenshot_20230519-161014_FaceIdentification.jpg" alt="" width="263"><img title="" src="file:///C:/Users/Lenovo/Desktop/Screenshot_20230519-161030_FaceIdentification.jpg" alt="" width="262">
+<img title="" src="https://github.com/ppd324/FaceIdentificationAndroid/blob/master/images/Screenshot_20230519-161014_FaceIdentification.jpg" alt="" width="263"><img title="" src="https://github.com/ppd324/FaceIdentificationAndroid/blob/master/images/Screenshot_20230519-161030_FaceIdentification.jpg" alt="" width="262">
 
 ## 说明
 
