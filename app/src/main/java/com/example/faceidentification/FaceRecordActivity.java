@@ -1,5 +1,8 @@
 package com.example.faceidentification;
 
+import static com.example.faceidentification.MainActivity.readPictureDegree;
+import static com.example.faceidentification.MainActivity.rotateBitmap;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -43,7 +46,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.Date;
 
 public class FaceRecordActivity extends AppCompatActivity {
@@ -59,7 +61,7 @@ public class FaceRecordActivity extends AppCompatActivity {
     private Uri imageUri;
 
     private EditText faceName;
-
+    private  ActivityResultLauncher takePictureLauncher;
     private EditText faceAge;
 
     public static File uriToFile(Uri uri, Context context) {
@@ -108,7 +110,21 @@ public class FaceRecordActivity extends AppCompatActivity {
         }
 
     }
-
+    private Uri getTakePictureUri() {
+        File dir = new File(Environment.getExternalStorageDirectory(), "pictures");
+        if (dir.exists()) {
+            dir.mkdirs();//在根路径下建子目录，子目录名是"pictures"
+        }
+        //命名临时图片的文件名
+        tempFile = new File(dir, System.currentTimeMillis() + ".jpg");
+        Uri uri_camera;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            //test.xxx.com.myapplication.fileprovider 是在清单文件配置的 android:authorities
+            return FileProvider.getUriForFile(this, "com.example.faceidentification.fileprovider", tempFile);
+        } else {
+            return Uri.fromFile(tempFile);
+        }
+    }
     private Intent openCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         System.out.println("用户点击了拍照按钮");
@@ -172,25 +188,20 @@ public class FaceRecordActivity extends AppCompatActivity {
                     }
                 }
         });
-        ActivityResultLauncher takePictureLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        takePictureLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(), new ActivityResultCallback<Boolean>() {
             @Override
-            public void onActivityResult(ActivityResult result) {
-                if(result.getResultCode() == RESULT_OK) {
-                    if (result.getData() != null) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            Uri contentUri = FileProvider.getUriForFile(FaceRecordActivity.this, "test.xxx.com.myapplication.fileprovider", tempFile);
-                            Log.i("onActivityResult", "拍照成功");
-                            imageView.setImageURI(contentUri);
-                        }else {
-                            imageView.setImageURI(Uri.fromFile(tempFile));
-                        }
-                    } else {
-                        Log.w("onActivityResult", "拍照失败");
-                    }
+            public void onActivityResult(Boolean result) {
+                if (result) {
+                    Log.e("onActivityResult", "拍照成功");
+                    String imgPath = tempFile.getPath();
+                    int degree = readPictureDegree(imgPath);
+                    Bitmap faceBitmap = rotateBitmap(degree, BitmapFactory.decodeFile(imgPath));
+                    imageView.setImageBitmap(faceBitmap);
+                }else {
+                    Log.e("onActivityResult", "拍照失败");
                 }
-
             }
-        });
+        } );
 
         uploadLocalButton.setOnClickListener(v -> {
             Intent intent = choosePhoto();
@@ -203,8 +214,9 @@ public class FaceRecordActivity extends AppCompatActivity {
             if (checkPermission != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
             } else {
-                Intent intent = openCamera();
-                takePictureLauncher.launch(intent);
+                //Intent intent = openCamera();
+                Uri uri = getTakePictureUri();
+                takePictureLauncher.launch(uri);
             }
         });
 
