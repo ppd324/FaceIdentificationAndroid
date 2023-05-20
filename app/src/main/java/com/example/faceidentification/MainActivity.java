@@ -57,13 +57,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private ActivityMainBinding binding;
-    private ImageView image;
 
     private ImageView faceImage;
 
     private ImageView faceDetect;
-
-    private Bitmap bitmap;
 
     private Bitmap faceBitmap;
 
@@ -75,10 +72,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Button detectLocalButton;
 
-    private Button changeButton;
     private Button faceDetectButton;
 
-    private Button recoverButton;
 
     private Button faceRecordButton;
 
@@ -87,8 +82,6 @@ public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher getCameraPhotoLauncher;
 
     public static TextView recognitionResText;
-
-    private File tempFile;
 
     private File currentImageFile = null;
 
@@ -195,13 +188,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void initItems() {
         //加载默认照片
-        bitmap = BitmapFactory.decodeStream(getClass().getResourceAsStream("/res/drawable/test1.png"));
+        //bitmap = BitmapFactory.decodeStream(getClass().getResourceAsStream("/res/drawable/test1.png"));
 //        bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
         faceBitmap = BitmapFactory.decodeStream(getClass().getResourceAsStream("/res/drawable/zhou.jpg"));
 
         //获取button
-        changeButton = findViewById(R.id.changGrayButton);
-        recoverButton = findViewById(R.id.RecoverButton);
         faceDetectButton = findViewById(R.id.faceDetectButton);
         faceRecordButton = findViewById(R.id.faceRecord);
         detectLocalButton = findViewById(R.id.detectLocalButton);
@@ -209,12 +200,8 @@ public class MainActivity extends AppCompatActivity {
 
         faceImage = findViewById(R.id.faceImage);
         faceImage.setImageBitmap(faceBitmap);
-        textView = findViewById(R.id.textView1);
         recognitionResText = findViewById(R.id.recognitionResText);
         faceDetect = findViewById(R.id.faceDetectRes);
-
-        image = findViewById(R.id.image);
-        image.setImageBitmap(bitmap);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
@@ -312,33 +299,6 @@ public class MainActivity extends AppCompatActivity {
 
         //faceDetect.setImageBitmap(faceBitmap);
 
-        recoverButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                image.setImageBitmap(bitmap);
-            }
-        });
-
-        changeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Mat srcMat = new Mat();
-                Mat dstMat = new Mat();
-                if (bitmap != null) {
-                    System.out.println("convert image");
-                    Utils.bitmapToMat(bitmap, srcMat);
-                    //Utils.bitmapToMat(bitmap,dstMat);
-                    //Imgproc.cvtColor(srcMat,dstMat,Imgproc.COLOR_BGRA2GRAY);
-                    convertColor(srcMat.getNativeObjAddr(), dstMat.getNativeObjAddr());
-                    Bitmap graybitmap = Bitmap.createBitmap(dstMat.width(), dstMat.height(), Bitmap.Config.ARGB_8888);
-
-                    Utils.matToBitmap(dstMat, graybitmap);
-                    image.setImageBitmap(graybitmap);
-                } else {
-                    System.out.println("bitmap is null");
-                }
-            }
-        });
 
         faceDetectButton.setOnClickListener(new View.OnClickListener() {
             @Override
